@@ -2,6 +2,11 @@
 
 Collect data from SAP tables directly.
 
+## Install
+```
+pip install sap-rfc-data-collector
+```
+
 ## Quick start
 ```
 from sap_rfc_data_collector.sap import SAP
