@@ -31,6 +31,8 @@ class SAP:
         for j, d in enumerate(result):
             resultado = d['WA']
             df.loc[j] = resultado.split('¬')
+        df_obj = df.select_dtypes(['object'])
+        df[df_obj.columns] = df_obj.apply(lambda x: x.str.strip())
         return df
 
     def get_data_df(self,
