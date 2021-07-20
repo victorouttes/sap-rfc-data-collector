@@ -6,25 +6,8 @@ from typing import List, Generator
 
 
 class SAP:
-    def __init__(self,
-                 host: str,
-                 service: str,
-                 group: str,
-                 sysname: str,
-                 client: str,
-                 lang: str,
-                 user: str,
-                 password: str):
-        self.connection = SAPConnection(
-            host=host,
-            service=service,
-            group=group,
-            sysname=sysname,
-            client=client,
-            lang=lang,
-            user=user,
-            password=password
-        )
+    def __init__(self, connection: SAPConnection):
+        self.connection = connection
 
     def _to_dataframe(self, result: list, colunas: list) -> pd.DataFrame:
         df = pd.DataFrame(columns=colunas)
