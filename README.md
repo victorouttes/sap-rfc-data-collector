@@ -8,35 +8,31 @@ pip install sap-rfc-data-collector
 ```
 
 ## Quick start
-```
-from sap_rfc_data_collector.sap import SAP
+```python
+from sap_rfc_data_collector.connection import SAPConnection
+from sap_rfc_data_collector.sap_generic import SAP
 
-runner = SAP(host='host',
-             service='service',
-             group='group',
-             sysname='sysname',
-             client='client',
-             lang='lang',
-             user='user',
-             password='password')
+conn = SAPConnection(host='host',
+                     service='service',
+                     group='group',
+                     sysname='sysname',
+                     client='client',
+                     lang='lang',
+                     user='user',
+                     password='password')
 
-# get dataframe from functional location table (IFLO)
-df = runner.get_dataframe(
-    table='IFLO',
-    columns=['TPLNR', 'ZFAMF'],
-    where="IWERK = 'CMPN'"
+runner = SAP(connection=conn)
+
+# get iterator of dataframes (for each 1000 rows) from functional location table (IFLO)
+data = runner.get_data_df(
+  table='IFLO',
+  columns=['TPLNR', 'ZFAMF'],
+  where="IWERK = 'CMPN'",
+  page_size=1000
 )
 
-print(df.shape)
-```
-Result:
-```
-[...]
-Aproximate rows collected...68000
-Aproximate rows collected...69000
-Aproximate rows collected...70000
-Aproximate rows collected...71000
-(70616, 2)
+for df in data:
+    print(df.head())
 ```
 
 Consult some site (like https://www.sapdatasheet.org) to identify tables and
