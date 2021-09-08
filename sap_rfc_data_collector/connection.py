@@ -5,12 +5,12 @@ class SAPConnection:
     def __init__(self,
                  host: str,
                  service: str,
-                 group: str,
                  sysname: str,
                  client: str,
                  lang: str,
                  user: str,
-                 password: str):
+                 password: str,
+                 group: str = None):
         self.host = host
         self.service = service
         self.group = group
