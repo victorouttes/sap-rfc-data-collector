@@ -2,6 +2,7 @@ import pandas as pd
 from pyrfc import ABAPApplicationError, ABAPRuntimeError, LogonError, CommunicationError
 
 from .connection import SAPConnection
+from .exceptions import SAPException
 from typing import List, Generator
 
 
@@ -50,20 +51,8 @@ class SAP:
                     break
                 page += 1
             except CommunicationError:
-                if df.empty:
-                    df['error'] = ['Could not connect to server.']
-                else:
-                    df['error'] = 'Could not connect to server.'
-                break
+                raise SAPException('Could not connect to server')
             except LogonError:
-                if df.empty:
-                    df['error'] = ['Could not log in. Wrong credentials?']
-                else:
-                    df['error'] = 'Could not log in. Wrong credentials?'
-                break
+                raise SAPException('Could not log in. Wrong credentials?')
             except (ABAPApplicationError, ABAPRuntimeError):
-                if df.empty:
-                    df['error'] = ['An error occurred.']
-                else:
-                    df['error'] = 'An error occurred.'
-                break
+                raise SAPException('An error occurred at ABAP level')
