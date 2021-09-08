@@ -21,13 +21,24 @@ class SAPConnection:
         self.password = password
 
     def get_connection(self) -> Connection:
-        return Connection(
-            user=self.user,
-            passwd=self.password,
-            mshost=self.host,
-            msserv=self.service,
-            group=self.group,
-            sysid=self.sysname,
-            client=self.client,
-            lang=self.lang
-        )
+        if self.group:
+            return Connection(
+                user=self.user,
+                passwd=self.password,
+                mshost=self.host,
+                msserv=self.service,
+                group=self.group,
+                sysid=self.sysname,
+                client=self.client,
+                lang=self.lang
+            )
+        else:
+            return Connection(
+                user=self.user,
+                passwd=self.password,
+                mshost=self.host,
+                msserv=self.service,
+                sysid=self.sysname,
+                client=self.client,
+                lang=self.lang
+            )
