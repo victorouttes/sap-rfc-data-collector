@@ -11,23 +11,17 @@ class SAPConnection:
                  service: str = None,
                  sysname: str = None,
                  group: str = None):
-        self.host = host
-        self.service = service
-        self.group = group
-        self.sysname = sysname
-        self.client = client
-        self.lang = lang
-        self.user = user
-        self.password = password
+        self.params = {
+            'mshost': host,
+            'msserv': service,
+            'group': group,
+            'sysid': sysname,
+            'client': client,
+            'lang': lang,
+            'user': user,
+            'passwd': password,
+        }
 
     def get_connection(self) -> Connection:
-        return Connection(
-            user=self.user,
-            passwd=self.password,
-            mshost=self.host,
-            msserv=self.service,
-            group=self.group,
-            sysid=self.sysname,
-            client=self.client,
-            lang=self.lang
-        )
+        params = {k: v for k, v in self.params.items() if v is not None}
+        return Connection(**params)
