@@ -56,3 +56,37 @@ class SAP:
                 raise SAPException('Could not log in. Wrong credentials?')
             except (ABAPApplicationError, ABAPRuntimeError):
                 raise SAPException('An error occurred at ABAP level')
+
+    def get_data_json(self,
+                      table: str,
+                      columns: List[str],
+                      page: int,
+                      where: str = None,
+                      page_size: int = 1000) -> Generator[pd.DataFrame, None, None]:
+        fields = []
+        where_clause = []
+        df = pd.DataFrame(columns=columns)
+        if where:
+            where_clause = [{"TEXT": where}]
+        if columns:
+            fields = [{"FIELDNAME": f} for f in columns]
+
+        try:
+            connection = self.connection.get_connection()
+            start = (page - 1) * page_size
+            limit = page_size
+            result = connection.call('RFC_READ_TABLE',
+                                     QUERY_TABLE=table,
+                                     DELIMITER='¬',
+                                     FIELDS=fields,
+                                     OPTIONS=where_clause,
+                                     ROWSKIPS=start,
+                                     ROWCOUNT=limit)
+            connection.close()
+            return self._to_dataframe(result['DATA'], columns).to_json(orient='records', index=False)
+        except CommunicationError:
+            raise SAPException('Could not connect to server')
+        except LogonError:
+            raise SAPException('Could not log in. Wrong credentials?')
+        except (ABAPApplicationError, ABAPRuntimeError):
+            raise SAPException('An error occurred at ABAP level')
