@@ -3,7 +3,8 @@ from pyrfc import ABAPApplicationError, ABAPRuntimeError, LogonError, Communicat
 
 from .connection import SAPConnection
 from .exceptions import SAPException
-from typing import List, Generator
+from typing import List, Generator, Any
+import json
 
 
 class SAP:
@@ -62,7 +63,7 @@ class SAP:
                       columns: List[str],
                       page: int,
                       where: str = None,
-                      page_size: int = 1000) -> Generator[pd.DataFrame, None, None]:
+                      page_size: int = 1000) -> Any:
         fields = []
         where_clause = []
         df = pd.DataFrame(columns=columns)
@@ -83,7 +84,7 @@ class SAP:
                                      ROWSKIPS=start,
                                      ROWCOUNT=limit)
             connection.close()
-            return self._to_dataframe(result['DATA'], columns).to_json(orient='records', force_ascii=False)
+            return json.loads(self._to_dataframe(result['DATA'], columns).to_json(orient='records', force_ascii=False))
         except CommunicationError:
             raise SAPException('Could not connect to server')
         except LogonError:
