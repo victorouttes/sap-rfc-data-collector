@@ -83,7 +83,7 @@ class SAP:
                                      ROWSKIPS=start,
                                      ROWCOUNT=limit)
             connection.close()
-            return self._to_dataframe(result['DATA'], columns).to_json(orient='records')
+            return self._to_dataframe(result['DATA'], columns).to_json(orient='records', force_ascii=False)
         except CommunicationError:
             raise SAPException('Could not connect to server')
         except LogonError:
