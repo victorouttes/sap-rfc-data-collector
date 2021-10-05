@@ -24,6 +24,7 @@ class SAP:
                     table: str,
                     columns: List[str],
                     where: str = None,
+                    humanized_columns: List[str] = None,
                     page_size: int = 1000) -> Generator[pd.DataFrame, None, None]:
         fields = []
         where_clause = []
@@ -47,7 +48,10 @@ class SAP:
                                          ROWSKIPS=start,
                                          ROWCOUNT=limit)
                 connection.close()
-                yield self._to_dataframe(result['DATA'], columns)
+                data = self._to_dataframe(result['DATA'], columns)
+                if humanized_columns:
+                    data.columns = humanized_columns
+                yield data
                 if len(result['DATA']) < page_size:
                     break
                 page += 1
@@ -63,6 +67,7 @@ class SAP:
                       columns: List[str],
                       page: int,
                       where: str = None,
+                      humanized_columns: List[str] = None,
                       page_size: int = 1000) -> Any:
         fields = []
         where_clause = []
@@ -84,7 +89,10 @@ class SAP:
                                      ROWSKIPS=start,
                                      ROWCOUNT=limit)
             connection.close()
-            return json.loads(self._to_dataframe(result['DATA'], columns).to_json(orient='records', force_ascii=False))
+            data = self._to_dataframe(result['DATA'], columns)
+            if humanized_columns:
+                data.columns = humanized_columns
+            return json.loads(data.to_json(orient='records', force_ascii=False))
         except CommunicationError:
             raise SAPException('Could not connect to server')
         except LogonError:
