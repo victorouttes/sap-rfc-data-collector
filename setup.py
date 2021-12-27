@@ -10,7 +10,7 @@ setup(
     packages=[
         'sap_rfc_data_collector',
     ],
-    version='0.16',
+    version='1.0.0',
     license='MIT',
     description='Collect data from SAP tables',
     long_description=long_description,
@@ -18,7 +18,7 @@ setup(
     author='Victor Outtes',
     author_email='victor.outtes@gmail.com',
     url='https://github.com/victorouttes/sap-rfc-data-collector',
-    download_url='https://github.com/victorouttes/sap-rfc-data-collector/archive/refs/tags/0.16.tar.gz',
+    download_url='https://github.com/victorouttes/sap-rfc-data-collector/archive/refs/tags/1.0.0.tar.gz',
     keywords=['sap', 'data', 'rfc', 'read_table', 'ec3', 'hana'],
     install_requires=[
         'Cython~=0.29.23',
@@ -34,5 +34,8 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
 )

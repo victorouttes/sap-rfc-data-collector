@@ -1,10 +1,11 @@
+import json
+from typing import List, Generator, Any
+
 import pandas as pd
 from pyrfc import ABAPApplicationError, ABAPRuntimeError, LogonError, CommunicationError
 
 from .connection import SAPConnection
 from .exceptions import SAPException
-from typing import List, Generator, Any
-import json
 
 
 class SAP:
@@ -24,13 +25,15 @@ class SAP:
                     table: str,
                     columns: List[str],
                     where: str = None,
+                    where_list: List[str] = None,
                     humanized_columns: List[str] = None,
                     page_size: int = 1000) -> Generator[pd.DataFrame, None, None]:
         fields = []
         where_clause = []
-        df = pd.DataFrame(columns=columns)
         if where:
             where_clause = [{"TEXT": where}]
+        elif where_list:
+            where_clause = [{"TEXT": w} for w in where_list]
         if columns:
             fields = [{"FIELDNAME": f} for f in columns]
 
@@ -67,13 +70,15 @@ class SAP:
                       columns: List[str],
                       page: int,
                       where: str = None,
+                      where_list: List[str] = None,
                       humanized_columns: List[str] = None,
                       page_size: int = 1000) -> Any:
         fields = []
         where_clause = []
-        df = pd.DataFrame(columns=columns)
         if where:
             where_clause = [{"TEXT": where}]
+        elif where_list:
+            where_clause = [{"TEXT": w} for w in where_list]
         if columns:
             fields = [{"FIELDNAME": f} for f in columns]
 
