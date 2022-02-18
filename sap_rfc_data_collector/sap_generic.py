@@ -60,7 +60,8 @@ class SAP:
                 response_columns = [col.get('FIELDNAME') for col in response_columns]
                 data = self._to_dataframe(result['DATA'], response_columns, response_columns_lenght)
                 if humanized_columns:
-                    data.columns = humanized_columns
+                    new_humanized_columns = dict(zip(columns, humanized_columns))
+                    data.rename(columns=new_humanized_columns, inplace=True)
                 yield data
                 if len(result['DATA']) < page_size:
                     break
@@ -107,7 +108,8 @@ class SAP:
             response_columns = [col.get('FIELDNAME') for col in response_columns]
             data = self._to_dataframe(result['DATA'], response_columns, response_columns_lenght)
             if humanized_columns:
-                data.columns = humanized_columns
+                new_humanized_columns = dict(zip(columns, humanized_columns))
+                data.rename(columns=new_humanized_columns, inplace=True)
             return json.loads(data.to_json(orient='records', force_ascii=False))
         except CommunicationError:
             raise SAPException('Could not connect to server')
