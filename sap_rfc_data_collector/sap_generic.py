@@ -12,11 +12,15 @@ class SAP:
     def __init__(self, connection: SAPConnection):
         self.connection = connection
 
-    def _to_dataframe(self, result: list, colunas: list) -> pd.DataFrame:
+    def _to_dataframe(self, result: list, colunas: list, tamanhos: list) -> pd.DataFrame:
         df = pd.DataFrame(columns=colunas)
         for j, d in enumerate(result):
             resultado = d['WA']
-            df.loc[j] = resultado.split('¬')
+            linha_resultado = []
+            for i, col in enumerate(colunas):
+                valor = resultado[sum(tamanhos[:i]):sum(tamanhos[:i + 1])]
+                linha_resultado.append(valor)
+            df.loc[j] = linha_resultado
         df_obj = df.select_dtypes(['object'])
         df[df_obj.columns] = df_obj.apply(lambda x: x.str.strip())
         return df
@@ -45,13 +49,16 @@ class SAP:
                 limit = page_size
                 result = connection.call('RFC_READ_TABLE',
                                          QUERY_TABLE=table,
-                                         DELIMITER='¬',
+                                         # DELIMITER='¬',
                                          FIELDS=fields,
                                          OPTIONS=where_clause,
                                          ROWSKIPS=start,
                                          ROWCOUNT=limit)
                 connection.close()
-                data = self._to_dataframe(result['DATA'], columns)
+                response_columns = result.get('FIELDS')
+                response_columns_lenght = [int(col.get('LENGTH')) for col in response_columns]
+                response_columns = [col.get('FIELDNAME') for col in response_columns]
+                data = self._to_dataframe(result['DATA'], response_columns, response_columns_lenght)
                 if humanized_columns:
                     data.columns = humanized_columns
                 yield data
@@ -88,13 +95,17 @@ class SAP:
             limit = page_size
             result = connection.call('RFC_READ_TABLE',
                                      QUERY_TABLE=table,
-                                     DELIMITER='¬',
+                                     # DELIMITER='¬',
                                      FIELDS=fields,
                                      OPTIONS=where_clause,
                                      ROWSKIPS=start,
                                      ROWCOUNT=limit)
             connection.close()
-            data = self._to_dataframe(result['DATA'], columns)
+
+            response_columns = result.get('FIELDS')
+            response_columns_lenght = [int(col.get('LENGTH')) for col in response_columns]
+            response_columns = [col.get('FIELDNAME') for col in response_columns]
+            data = self._to_dataframe(result['DATA'], response_columns, response_columns_lenght)
             if humanized_columns:
                 data.columns = humanized_columns
             return json.loads(data.to_json(orient='records', force_ascii=False))
